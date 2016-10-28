@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Script to log the load every XX Minutes (define it with your cron)
+# The script also has his own rotation build in
+# 28.10.2016 - Denis Walther
+
+logfile=/var/log/load.log
+echo $(echo -n $(date "+%a %b %d %r"); echo -n " - "; echo $(uptime)) >> $logfile
+
+# Rotation
+path=/var/log
+find $path -name "load.log" -mtime +1 -exec mv {} {}.$(date "+%Y-%m-%d") \;
+
+# 7 day rotation
+find $path -name "load.log.*" -mtime +7 -exec rm {} \;
+
+# Gzip
+find $path -name "load.log.*" -mtime +1 -exec gzip {} \;
+
